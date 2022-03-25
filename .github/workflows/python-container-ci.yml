@@ -6,7 +6,7 @@ name: Python Container CI Pipeline
 on:
   workflow_call:
     inputs:
-      runs_on:
+      runs-on:
         description: Platform to execute on
         required: false
         type: string
