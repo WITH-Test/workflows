@@ -304,10 +304,10 @@ jobs:
         COSIGN_EXPERIMENTAL: "true"
       run: cosign sign ${{ inputs.CONTAINER_REGISTRY }}/${{ steps.get-repo.outputs.repo }}:${{ steps.meta.outputs.version }}
 
-    - name: Upload Trivy scan results to GitHub Security tab
-      uses: github/codeql-action/upload-sarif@v1
-      with:
-        sarif_file: 'trivy-results.sarif'
+#    - name: Upload Trivy scan results to GitHub Security tab
+#      uses: github/codeql-action/upload-sarif@v1
+#      with:
+#        sarif_file: 'trivy-results.sarif'
 
     - name: Prepare content for Slack notification
       if: ${{ always() && inputs.ENABLE_SLACK }}
