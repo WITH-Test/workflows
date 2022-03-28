@@ -127,7 +127,7 @@ jobs:
       uses: isort/isort-action@master
       with:
         sortPaths: ${{ inputs.project-folder }}
-        configuration: "--check-only --diff --profile=black"
+        configuration: "${{ inputs.ENFORCE_ISORT && '--check-only' || '' }} --diff --profile=black"
 
     - name: Check format (black)
       uses: psf/black@stable
