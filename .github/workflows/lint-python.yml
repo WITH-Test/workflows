@@ -1,6 +1,4 @@
 ---
-# from https://github.com/MartinHeinz/workflows/blob/v1.0.0/.github/workflows/python-container-ci.yml
-# added `runs_on` and `project-folder` inputs for flexibility
 name: 'DogeOps : Python Lint'
 
 on:
