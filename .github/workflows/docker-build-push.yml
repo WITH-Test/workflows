@@ -35,14 +35,13 @@ on:
 
 jobs:
   build:
-    inputs:
-      runs-on: ${{ inputs.runs-on }}
     defaults:
       run:
         working-directory: ${{ inputs.project-folder }}
     permissions:
       contents: read
       packages: write  # Push
+    runs-on: ${{ inputs.runs-on }}
     steps:
     - name: Get repository accesses
       id: get-repo
@@ -108,6 +107,7 @@ jobs:
     # The results of this scan should be pushed to GH security, but that's not free
     - name: Trivy vulnerability scan
       uses: aquasecurity/trivy-action@master
+      id: image-scan
       with:
         image-ref: '${{ inputs.container_registry }}/${{ steps.get-repo.outputs.repo }}:${{ steps.meta.outputs.version }}'
         format: 'sarif'
