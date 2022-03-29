@@ -43,6 +43,7 @@ jobs:
       packages: write  # Push
     runs-on: ${{ inputs.runs-on }}
     steps:
+    - uses: actions/checkout@v3
     - name: Get repository accesses
       id: get-repo
       run: |
