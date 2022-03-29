@@ -7,9 +7,10 @@ on:
         description: Platform to execute on
         required: false
         type: string
-        default: 'ubuntu-latest'
+        default: ubuntu-latest
       project-folder:
         description: The folder containing the project to build
+        required: false
         type: string
         default: .
 
