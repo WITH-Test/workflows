@@ -90,6 +90,7 @@ jobs:
     - name: debug
       run: |
         pwd
+        cd ..
         ls -laRt
 
     - name: Build image
