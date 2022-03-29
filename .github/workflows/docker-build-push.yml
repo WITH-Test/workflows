@@ -58,6 +58,10 @@ jobs:
           USERNAME=${{ secrets.container_registry_username }}
           PASSWORD=${{ secrets.container_registry_password }}
         fi
+        if [ ${{ inputs.project-folder }} != '.' ]; then
+          REPO_SFX=${{ inputs.project-folder }}-
+          echo "suffixed $REPO$REP_SFX"
+        fi
 
         echo "::set-output name=repo::$REPO"
         echo "::set-output name=username::$USERNAME"
