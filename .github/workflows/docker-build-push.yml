@@ -35,9 +35,6 @@ on:
 
 jobs:
   build:
-    defaults:
-      run:
-        working-directory: ${{ inputs.project-folder }}
     permissions:
       contents: read
       packages: write  # Push
