@@ -87,6 +87,11 @@ jobs:
           type=ref,event=tag
           type=sha
 
+    - name: debug
+      run: |
+        pwd
+        ls -laRt
+
     - name: Build image
       uses: docker/build-push-action@v2
       with:
