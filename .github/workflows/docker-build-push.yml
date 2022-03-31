@@ -123,10 +123,14 @@ jobs:
         cache-from: type=registry,ref=${{ inputs.container_registry }}/${{ steps.get-repo.outputs.repo }}:latest
         cache-to: type=registry,ref=${{ inputs.container_registry }}/${{ steps.get-repo.outputs.repo }}:latest,mode=max
 
+    # run this only for prod
+    # every image sign needs user intervention
     - name: Install cosign
       uses: sigstore/cosign-installer@main
+      if: ${{ github.ref_type }} == 'tag'
 
     - name: Sign the published image
+      if: ${{ github.ref_type }} == 'tag'
       env:
         COSIGN_EXPERIMENTAL: "true"
       run: cosign sign ${{ inputs.container_registry }}/${{ steps.get-repo.outputs.repo }}:${{ steps.meta.outputs.version }}
