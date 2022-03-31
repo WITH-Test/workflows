@@ -61,8 +61,8 @@ jobs:
           PASSWORD=${{ secrets.container_registry_password }}
         fi
         if [ ${{ inputs.project-folder }} != '.' ]; then
-          REPO_SFX=${{ inputs.project-folder }}-
-          echo "suffixed $REPO$REP_SFX"
+          REPO_SFX=-${{ inputs.project-folder }}
+          echo "suffixed $REPO$REPO_SFX"
         fi
 
         echo "::set-output name=repo::$REPO"
