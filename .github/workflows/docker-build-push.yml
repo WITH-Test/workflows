@@ -14,8 +14,6 @@ on:
         required: false
         type: string
         default: .
-
-      # -----------------------
       container_registry:
         description: 'defaults to ghcr. supports dockerhub and ecr'
         required: false
@@ -99,7 +97,7 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ env.AWS_REGION }}
+        aws-region: ${{ inputs.AWS_REGION }}
 
     - name: Login to Amazon ECR
       if: inputs.container_registry == 'ecr'
