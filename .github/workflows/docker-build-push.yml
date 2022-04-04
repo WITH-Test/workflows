@@ -17,7 +17,7 @@ on:
 
       # -----------------------
       container_registry:
-        description: 'defaults to "ghcr" (GitHub Container Registry) (ex: dockerhub, ecr)'
+        description: 'defaults to ghcr. supports dockerhub and ecr'
         required: false
         type: string
         default: 'ghcr'
