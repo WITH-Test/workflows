@@ -1,6 +1,6 @@
 name: 'DogeOps : Python Lint'
 
-'on':
+on:
   workflow_call:
     inputs:
       runs-on:

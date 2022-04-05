@@ -1,6 +1,6 @@
 name: 'DogeOps : Build image'
 
-'on':
+on:
   workflow_call:
     inputs:
       runs-on:
