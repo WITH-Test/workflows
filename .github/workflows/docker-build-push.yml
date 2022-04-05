@@ -98,7 +98,7 @@ jobs:
         password: ${{ steps.get-repo.outputs.password }}
 
     - name: Configure AWS credentials
-      if: steps.get-repo.outputs.provider != 'ecr'
+      if: steps.get-repo.outputs.provider == 'ecr'
       uses: aws-actions/configure-aws-credentials@v1
       with:
         role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
