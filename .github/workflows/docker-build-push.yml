@@ -1,5 +1,4 @@
----
-name: 'Build image'
+name: 'DogeOps : Build image'
 
 on:
   workflow_call:
@@ -29,6 +28,7 @@ on:
         required: false
         type: string
         default: 'eu-west-3'
+
     secrets:
       container_registry_username:
         description: 'Username for container registry'
