@@ -28,11 +28,11 @@ on:
         required: false
         type: string
         default: 'eu-west-3'
+
+    secrets:
       AWS_ROLE_ARN:
         description: 'AWS Role ARN to assume (must exist)'
         required: false
-
-    secrets:
       container_registry_username:
         description: 'Username for container registry'
         required: false
