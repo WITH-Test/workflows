@@ -40,12 +40,16 @@ on:
         required: false
       AWS_SECRET_ACCESS_KEY:
         required: false
+      AWS_ROLE_ARN:
+        description: 'AWS Role ARN to assume (must exist)'
+        required: false
 
 jobs:
   build:
     permissions:
       contents: read
       packages: write  # Push
+      id-token: write  # AWS ECR
     runs-on: ${{ inputs.runs-on }}
     steps:
     - name: Checkout repo
@@ -92,8 +96,7 @@ jobs:
       if: inputs.container_registry == 'ecr'
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
         aws-region: ${{ inputs.AWS_REGION }}
 
     - name: Login to Amazon ECR
