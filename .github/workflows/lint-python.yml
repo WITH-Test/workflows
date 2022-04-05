@@ -103,7 +103,6 @@ jobs:
         key: ${{ steps.cache-meta.outputs.cache-key }}
 
     - name: Install Dependencies
-      if: steps.cache.outputs.cache-hit != 'true'
       run: |
         python -m pip install --upgrade pip
         python -m venv venv
