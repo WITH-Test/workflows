@@ -14,11 +14,11 @@ on:
         type: string
         default: '.'
       container_registry:
-        description: 'defaults to ghcr. supports dockerhub and ecr'
+        description: 'defaults to ghcr.io (supports docker.io and ecr regex)'
         required: false
         type: string
         default: 'ghcr'
-      container_repository_uri:
+      container_repository:
         description: "in case of Docker Hub: username/image-name"
         required: false
         type: string
@@ -61,22 +61,22 @@ jobs:
         REPO=""
         USERNAME=""
         PASSWORD=""
-        if [ ${{ inputs.container_registry }} = 'ghcr' ]; then
+        REGISTRY=""
+        if [ ${{ inputs.container_registry }} = 'ghcr.io' ]; then
           REPO=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')
           USERNAME=${{ github.actor }}
           PASSWORD=${{ secrets.GITHUB_TOKEN }}
-        elif [ ${{ inputs.container_registry }} = 'ecr' ]; then
-          REPO=${{ inputs.container_repository_uri }}
+        elif [ -n $( ${{ inputs.container_registry }} | grep '^.*\.dkr\.ecr\..*$' ) ]; then
+          REPO=${{ inputs.container_repository }}
+          REGISTRY=${{ inputs.container_registry }}
         else
-          REPO=${{ inputs.container_repository_uri }}
+          REGISTRY='docker.io'
+          REPO=${{ inputs.container_repository }}
           USERNAME=${{ secrets.container_registry_username }}
           PASSWORD=${{ secrets.container_registry_password }}
         fi
-        # suffix the repo if building other than cwd
-        if [ ${{ inputs.project-folder }} != '.' ]; then
-          REPO=$REPO-${{ inputs.project-folder }}
-        fi
 
+        echo "::set-output name=registry::$REGISTRY"
         echo "::set-output name=repo::$REPO"
         echo "::set-output name=username::$USERNAME"
         echo "::set-output name=password::$PASSWORD"
@@ -88,7 +88,7 @@ jobs:
       if: inputs.container_registry != 'ecr'
       uses: docker/login-action@v1
       with:
-        registry: ${{ inputs.container_registry }}
+        registry: ${{ steps.get-repo.outputs.registry }}
         username: ${{ steps.get-repo.outputs.username }}
         password: ${{ steps.get-repo.outputs.password }}
 
@@ -109,7 +109,7 @@ jobs:
       uses: docker/metadata-action@v3
       with:
         images: |
-           ${{ inputs.container_registry }}/${{ steps.get-repo.outputs.repo }}
+           ${{ steps.get-repo.outputs.registry }}/${{ steps.get-repo.outputs.repo }}
         tags: |
           type=ref,event=tag
           type=sha
