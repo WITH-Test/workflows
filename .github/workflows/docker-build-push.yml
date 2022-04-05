@@ -28,6 +28,9 @@ on:
         required: false
         type: string
         default: 'eu-west-3'
+      AWS_ROLE_ARN:
+        description: 'AWS Role ARN to assume (must exist)'
+        required: false
 
     secrets:
       container_registry_username:
@@ -39,9 +42,6 @@ on:
       AWS_ACCESS_KEY_ID:
         required: false
       AWS_SECRET_ACCESS_KEY:
-        required: false
-      AWS_ROLE_ARN:
-        description: 'AWS Role ARN to assume (must exist)'
         required: false
 
 jobs:
@@ -96,7 +96,7 @@ jobs:
       if: inputs.container_registry == 'ecr'
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+        role-to-assume: ${{ inputs.AWS_ROLE_ARN }}
         aws-region: ${{ inputs.AWS_REGION }}
 
     - name: Login to Amazon ECR
