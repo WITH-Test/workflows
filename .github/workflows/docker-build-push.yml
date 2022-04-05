@@ -1,6 +1,6 @@
 name: 'DogeOps : Build image'
 
-on:
+'on':
   workflow_call:
     inputs:
       runs-on:
@@ -43,9 +43,6 @@ on:
 
 jobs:
   build:
-#    defaults:
-#      run:
-#        working-directory: ${{ inputs.project-folder }}
     permissions:
       contents: read
       packages: write  # Push
