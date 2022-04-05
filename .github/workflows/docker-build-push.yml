@@ -86,10 +86,10 @@ jobs:
         echo "::set-output name=username::$USERNAME"
         echo "::set-output name=password::$PASSWORD"
 
-#    - name: Set up Docker Buildx
-#      uses: docker/setup-buildx-action@v1
-#      with:
-#        install: true
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+      with:
+        install: true
 
     - name: Login to Container Registry
       if: steps.get-repo.outputs.provider != 'ecr'
@@ -128,8 +128,8 @@ jobs:
         load: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
-        cache-from: type=registry,ref=${{ steps.get-repo.outputs.registry }}/${{ steps.get-repo.outputs.repo }}:latest
-        cache-to: type=registry,ref=${{ steps.get-repo.outputs.registry }}/${{ steps.get-repo.outputs.repo }}:latest,mode=max
+#        cache-from: type=registry,ref=${{ steps.get-repo.outputs.registry }}/${{ steps.get-repo.outputs.repo }}:latest
+#        cache-to: type=registry,ref=${{ steps.get-repo.outputs.registry }}/${{ steps.get-repo.outputs.repo }}:latest,mode=max
 
     - name: Analyze image efficiency
       uses: MartinHeinz/dive-action@v0.1.3
