@@ -5,12 +5,12 @@ on:
   workflow_call:
     inputs:
       runs-on:
-        description: Platform to execute on
+        description: 'Platform to execute on'
         required: false
         type: string
         default: 'ubuntu-latest'
       project-folder:
-        description: The folder containing the project to build
+        description: 'The folder containing the project to build'
         type: string
         required: false
         default: .

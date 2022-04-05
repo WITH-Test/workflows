@@ -1,5 +1,5 @@
 ---
-name: 'DogeOps : Build Docker image'
+name: 'Build image'
 
 on:
   workflow_call:
@@ -19,7 +19,7 @@ on:
         required: false
         type: string
         default: 'ghcr'
-      container_repository:
+      container_repository_uri:
         description: "in case of Docker Hub: username/image-name"
         required: false
         type: string
@@ -65,9 +65,9 @@ jobs:
           USERNAME=${{ github.actor }}
           PASSWORD=${{ secrets.GITHUB_TOKEN }}
         elif [ ${{ inputs.container_registry }} = 'ecr' ]; then
-          REPO=${{ inputs.container_repository }}
+          REPO=${{ inputs.container_repository_uri }}
         else
-          REPO=${{ inputs.container_repository }}
+          REPO=${{ inputs.container_repository_uri }}
           USERNAME=${{ secrets.container_registry_username }}
           PASSWORD=${{ secrets.container_registry_password }}
         fi
