@@ -96,7 +96,7 @@ jobs:
       if: inputs.container_registry == 'ecr'
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        aws-role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+        role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
         aws-region: ${{ inputs.AWS_REGION }}
 
     - name: Login to Amazon ECR
