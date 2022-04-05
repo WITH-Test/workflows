@@ -62,21 +62,26 @@ jobs:
         USERNAME=""
         PASSWORD=""
         REGISTRY=""
+        PROVIDER=""
         if [ ${{ inputs.container_registry }} = 'ghcr.io' ]; then
           REPO=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')
           USERNAME=${{ github.actor }}
           PASSWORD=${{ secrets.GITHUB_TOKEN }}
+          PROVIDER="ghcr"
         elif [ -n $( ${{ inputs.container_registry }} | grep '^.*\.dkr\.ecr\..*$' ) ]; then
           REPO=${{ inputs.container_repository }}
           REGISTRY=${{ inputs.container_registry }}
+          PROVIDER="ecr"
         else
           REGISTRY='docker.io'
+          PROVIDER="docker"
           REPO=${{ inputs.container_repository }}
           USERNAME=${{ secrets.container_registry_username }}
           PASSWORD=${{ secrets.container_registry_password }}
         fi
 
         echo "::set-output name=registry::$REGISTRY"
+        echo "::set-output name=provider::$PROVIDER"
         echo "::set-output name=repo::$REPO"
         echo "::set-output name=username::$USERNAME"
         echo "::set-output name=password::$PASSWORD"
@@ -85,7 +90,7 @@ jobs:
       uses: docker/setup-buildx-action@v1
 
     - name: Login to Container Registry
-      if: inputs.container_registry != 'ecr'
+      if: steps.get-repo.outputs.provider != 'ecr'
       uses: docker/login-action@v1
       with:
         registry: ${{ steps.get-repo.outputs.registry }}
@@ -93,14 +98,14 @@ jobs:
         password: ${{ steps.get-repo.outputs.password }}
 
     - name: Configure AWS credentials
-      if: inputs.container_registry == 'ecr'
+      if: steps.get-repo.outputs.provider != 'ecr'
       uses: aws-actions/configure-aws-credentials@v1
       with:
         role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
         aws-region: ${{ inputs.AWS_REGION }}
 
     - name: Login to Amazon ECR
-      if: inputs.container_registry == 'ecr'
+      if: steps.get-repo.outputs.provider == 'ecr'
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
 
@@ -121,12 +126,12 @@ jobs:
         load: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
-        cache-from: type=registry,ref=${{ inputs.container_registry }}/${{ steps.get-repo.outputs.repo }}:latest
-        cache-to: type=registry,ref=${{ inputs.container_registry }}/${{ steps.get-repo.outputs.repo }}:latest,mode=max
+        cache-from: type=registry,ref=${{ steps.get-repo.outputs.registry }}/${{ steps.get-repo.outputs.repo }}:latest
+        cache-to: type=registry,ref=${{ steps.get-repo.outputs.registry }}/${{ steps.get-repo.outputs.repo }}:latest,mode=max
 
     - name: Analyze image efficiency
       uses: MartinHeinz/dive-action@v0.1.3
-      if: false
+      if: 0 == 1
       with:
         image: '${{ inputs.container_registry }}/${{ steps.get-repo.outputs.repo }}:${{ steps.meta.outputs.version }}'
         config: ${{ inputs.DIVE_CONFIG }}
@@ -134,7 +139,7 @@ jobs:
 
     # The results of this scan should be pushed to GH security, but that's not free
     - name: Trivy vulnerability scan
-      if: false
+      if: 0 == 1
       uses: aquasecurity/trivy-action@master
       id: image-scan
       with:
