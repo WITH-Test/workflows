@@ -113,7 +113,7 @@ jobs:
 
     - name: Compute tags
       id: git-version
-      uses: WITH-Test/git-version@v2
+      uses: WITH-Test/git-version@master
       with:
         release-branch: main
         dev-branch: develop
