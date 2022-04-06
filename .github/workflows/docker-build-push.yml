@@ -129,7 +129,7 @@ jobs:
           type=ref,enable=${{ github.ref_type == 'branch' }},event=branch
           type=ref,enable=${{ github.ref_type == 'tag' }},event=tag
           type=semver,enable=${{ github.ref_type == 'tag' }},pattern={{major}}.{{minor}}
-          type=raw,enable=true,priority=200,prefix=,suffix=,value=${{step.git-version.outputs.version}}
+          type=raw,enable=true,priority=200,prefix=,suffix=,value=${{steps.git-version.outputs.version}}
           type=sha
 
     - name: Build image
