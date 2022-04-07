@@ -32,28 +32,28 @@ on:
     inputs:
       AWS_REGION:
         description: "The region to deploy to"
-        type: String
+        type: string
         required: true
         default: "eu-west-3"
       ENVIRONMENT:
         description: "GitHub environment"
         required: true
-        type: String
+        type: string
   workflow_call:
     inputs:
       AWS_REGION:
         description: "The region to deploy to"
-        type: String
+        type: string
         required: true
         default: "eu-west-3"
       ENVIRONMENT:
         description: "GitHub environment"
         required: true
-        type: String
+        type: string
     secrets:
       AWS_REPOSITORY:
         description: "ECR repository"
-        type: String
+        type: string
         required: true
 
 env:
