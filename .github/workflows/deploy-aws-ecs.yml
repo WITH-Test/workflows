@@ -68,7 +68,7 @@ jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
-    environment: ${{ github.ref == $default_branch ? "production" : ""}}
+    environment: ${{ inputs.ENVIRONMENT }}
 
     steps:
     - name: Checkout
