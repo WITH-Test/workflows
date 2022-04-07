@@ -33,7 +33,7 @@ on:
       AWS_REGION:
         description: "The region to deploy to"
         type: string
-        required: true
+        required: false
         default: "eu-west-3"
       ENVIRONMENT:
         description: "GitHub environment"
