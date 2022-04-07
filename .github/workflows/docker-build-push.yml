@@ -1,33 +1,36 @@
 name: 'DogeOps : Build image'
 
+inputs: &inputs
+  runs-on:
+    description: 'Platform to execute on'
+    required: false
+    type: string
+    default: 'ubuntu-latest'
+  project-folder:
+    description: 'The folder containing the project to build'
+    required: false
+    type: string
+    default: '.'
+  container_registry:
+    description: 'defaults to ghcr.io (supports docker.io and ecr regex)'
+    required: false
+    type: string
+    default: 'ghcr'
+  container_repository:
+    description: "in case of Docker Hub: username/image-name"
+    required: false
+    type: string
+    default: ''
+  AWS_REGION:
+    description: "in case of AWS ECR"
+    required: false
+    type: string
+    default: 'eu-west-3'
+
 on:
   workflow_call:
     inputs:
-      runs-on:
-        description: 'Platform to execute on'
-        required: false
-        type: string
-        default: 'ubuntu-latest'
-      project-folder:
-        description: 'The folder containing the project to build'
-        required: false
-        type: string
-        default: '.'
-      container_registry:
-        description: 'defaults to ghcr.io (supports docker.io and ecr regex)'
-        required: false
-        type: string
-        default: 'ghcr'
-      container_repository:
-        description: "in case of Docker Hub: username/image-name"
-        required: false
-        type: string
-        default: ''
-      AWS_REGION:
-        description: "in case of AWS ECR"
-        required: false
-        type: string
-        default: 'eu-west-3'
+      <<: *inputs
 
     secrets:
       AWS_ROLE_ARN:
@@ -108,7 +111,6 @@ jobs:
 
     - name: Login to Amazon ECR
       if: steps.get-repo.outputs.provider == 'ecr'
-      id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
 
     - name: Compute tags
