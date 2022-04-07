@@ -1,36 +1,33 @@
 name: 'DogeOps : Build image'
 
-inputs: &inputs
-  runs-on:
-    description: 'Platform to execute on'
-    required: false
-    type: string
-    default: 'ubuntu-latest'
-  project-folder:
-    description: 'The folder containing the project to build'
-    required: false
-    type: string
-    default: '.'
-  container_registry:
-    description: 'defaults to ghcr.io (supports docker.io and ecr regex)'
-    required: false
-    type: string
-    default: 'ghcr'
-  container_repository:
-    description: "in case of Docker Hub: username/image-name"
-    required: false
-    type: string
-    default: ''
-  AWS_REGION:
-    description: "in case of AWS ECR"
-    required: false
-    type: string
-    default: 'eu-west-3'
-
 on:
   workflow_call:
     inputs:
-      <<: *inputs
+      runs-on:
+        description: 'Platform to execute on'
+        required: false
+        type: string
+        default: 'ubuntu-latest'
+      project-folder:
+        description: 'The folder containing the project to build'
+        required: false
+        type: string
+        default: '.'
+      container_registry:
+        description: 'defaults to ghcr.io (supports docker.io and ecr regex)'
+        required: false
+        type: string
+        default: 'ghcr'
+      container_repository:
+        description: "in case of Docker Hub: username/image-name"
+        required: false
+        type: string
+        default: ''
+      AWS_REGION:
+        description: "in case of AWS ECR"
+        required: false
+        type: string
+        default: 'eu-west-3'
 
     secrets:
       AWS_ROLE_ARN:
@@ -170,6 +167,11 @@ jobs:
         tags: ${{ steps.meta.outputs.tags }}
 #        cache-from: type=registry,ref=${{ inputs.container_registry }}/${{ steps.get-repo.outputs.repo }}:latest
 #        cache-to: type=registry,ref=${{ inputs.container_registry }}/${{ steps.get-repo.outputs.repo }}:latest,mode=max
+
+    - name: Configure deploy variables
+      run: |
+        set -e
+
 
     # run this only for prod
     # every image sign needs user intervention
