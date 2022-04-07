@@ -2,7 +2,7 @@ name: Deploy environment selection
 
 on: [workflow_call]
 
-job:
+jobs:
   select-environment:
     runs-on: ubuntu-latest
 
