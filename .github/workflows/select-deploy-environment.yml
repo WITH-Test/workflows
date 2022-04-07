@@ -1,0 +1,24 @@
+name: Deploy environment selection
+
+on: [workflow_call]
+
+job:
+  select-environment:
+    runs-on: ubuntu-latest
+
+    outputs:
+      env: ${{steps.select.env}}
+
+    steps:
+      - name: Get env from branch name
+        id: select
+        run: |
+          set -e
+          ENV="feature"
+          if [ ${{github.ref_name}} == 'main']; then
+            ENV="production"
+          elif [ ${{github.ref_name}} == 'develop']; then
+            ENV="develop"
+          fi
+
+          echo "::set-output name=env::$ENV"
