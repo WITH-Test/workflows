@@ -76,8 +76,8 @@ jobs:
 
     - name: Fetch deploy config
       uses: actions/download-artifact@v1
-        with:
-          name: deploy-config
+      with:
+        name: deploy-config
 
     - name: Check deploy configs are available
       run: |
