@@ -185,12 +185,11 @@ jobs:
 
         echo "::set-output name=config::$CONFIG_DIR"
 
-    - name: Upload file status_job02.txt as an artifact
-        if: always()
-        uses: actions/upload-artifact@v1
-        with:
-          name: deploy-config
-          path: ${{steps.deploy-config.outputs.config}}
+    - name: Upload deploy config as artifact
+      uses: actions/upload-artifact@v1
+      with:
+        name: deploy-config
+        path: ${{steps.deploy-config.outputs.config}}
 
     # run this only for prod
     # every image sign needs user intervention
