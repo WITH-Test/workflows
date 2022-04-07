@@ -68,11 +68,25 @@ jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
-    environment: production
+    environment: ${{ github.ref == $default_branch ? "production" : ""}}
 
     steps:
     - name: Checkout
       uses: actions/checkout@v3
+
+    - name: Fetch deploy config
+      uses: actions/download-artifact@v1
+        with:
+          name: deploy-config
+
+    - name: Check deploy configs are available
+      run: |
+        set -e
+        cat deploy/config.yml
+
+    - name: Fail the job
+      run: |
+        exit 1
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1

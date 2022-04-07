@@ -51,6 +51,10 @@ jobs:
       packages: write  # Push
       id-token: write  # AWS ECR
     runs-on: ${{ inputs.runs-on }}
+
+    outputs:
+      deploy-config: ${{steps.deploy-config.outputs.config}}
+
     steps:
     - name: Checkout repo
       uses: actions/checkout@v3
@@ -169,9 +173,24 @@ jobs:
 #        cache-to: type=registry,ref=${{ inputs.container_registry }}/${{ steps.get-repo.outputs.repo }}:latest,mode=max
 
     - name: Configure deploy variables
+      id: deploy-config
       run: |
         set -e
 
+        CONFIG_DIR=deploy
+        mkdir $CONFIG_DIR
+        CONFIG=$CONFIG_DIR/config.yml
+
+        echo "this is a test" > $CONFIG
+
+        echo "::set-output name=config::$CONFIG_DIR"
+
+    - name: Upload file status_job02.txt as an artifact
+        if: always()
+        uses: actions/upload-artifact@v1
+        with:
+          name: deploy-config
+          path: ${{steps.deploy-config.outputs.config}}
 
     # run this only for prod
     # every image sign needs user intervention
