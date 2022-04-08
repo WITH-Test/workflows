@@ -69,11 +69,12 @@ jobs:
         PASSWORD=""
         REGISTRY=""
         PROVIDER=""
-        if [ ${{ inputs.container_registry }} = 'ghcr.io' ]; then
+        if [ "${{ inputs.container_registry }}" == 'ghcr.io' ]; then
+          REGISTRY='ghcr.io'
+          PROVIDER="ghcr"
           REPO=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')
           USERNAME=${{ github.actor }}
           PASSWORD=${{ secrets.GITHUB_TOKEN }}
-          PROVIDER="ghcr"
         elif [ -n $( ${{ inputs.container_registry }} | grep '^.*\.dkr\.ecr\..*$' ) ]; then
           REPO=${{ inputs.container_repository }}
           REGISTRY=${{ inputs.container_registry }}
@@ -99,7 +100,7 @@ jobs:
       if: steps.get-repo.outputs.provider != 'ecr'
       uses: docker/login-action@v1
       with:
-        registry: ${{ steps.get-repo.outputs.registry }}
+        registry: "${{ steps.get-repo.outputs.registry }}"
         username: ${{ steps.get-repo.outputs.username }}
         password: ${{ steps.get-repo.outputs.password }}
 
