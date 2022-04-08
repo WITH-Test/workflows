@@ -148,7 +148,7 @@ jobs:
 
     - name: Analyze image efficiency
       uses: MartinHeinz/dive-action@v0.1.3
-      if: 0 == 1
+      if: ${{ false }}
       with:
         image: '${{ inputs.container_registry }}/${{ steps.get-repo.outputs.repo }}:${{ steps.meta.outputs.version }}'
         config: ${{ inputs.DIVE_CONFIG }}
@@ -156,7 +156,7 @@ jobs:
 
     # The results of this scan should be pushed to GH security, but that's not free
     - name: Trivy vulnerability scan
-      if: 0 == 1
+      if: ${{ false }}
       uses: aquasecurity/trivy-action@master
       id: image-scan
       with:
