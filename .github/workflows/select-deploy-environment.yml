@@ -15,10 +15,10 @@ jobs:
         run: |
           set -e
           ENV="feature"
-          if [ ${{github.ref_name}} == 'main' ]; then
+          if [ "${{github.ref_name}}" == 'main' ]; then
             ENV="production"
-          elif [ ${{github.ref_name}} == 'develop' ]; then
+          elif [ "${{github.ref_name}}" == 'develop' ]; then
             ENV="develop"
           fi
-
+          echo "Selected environment ${ENV}"
           echo "::set-output name=env::$ENV"
