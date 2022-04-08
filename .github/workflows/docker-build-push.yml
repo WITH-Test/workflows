@@ -121,7 +121,7 @@ jobs:
       with:
         release-branch: main
         dev-branch: develop
-        log-path: ${{ inputs.project-folder }}
+        log-paths: ${{ inputs.project-folder }}
 
     - name: Generate tags and image meta
       id: meta
