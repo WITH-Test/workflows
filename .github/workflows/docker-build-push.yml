@@ -187,7 +187,7 @@ jobs:
         echo "::set-output name=config::$CONFIG_DIR"
 
     - name: Upload deploy config as artifact
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v3
       with:
         name: deploy-config
         path: ${{steps.deploy-config.outputs.config}}
