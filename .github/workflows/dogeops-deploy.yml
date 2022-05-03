@@ -25,12 +25,12 @@ jobs:
       runs-on:
         description: "Platform to execute on."
         type: string
-        default: ubuntu-latest
+        default: 'ubuntu-latest'
 
       aws_region:
         description: "AWS Region to deploy to"
         type: string
-        default: eu-west-3
+        default: 'eu-west-3'
 
       deploy_unit:
         type: string
@@ -44,10 +44,6 @@ jobs:
     steps:
       - name: Checkout 🛎
         uses: actions/checkout@v3
-
-      - name: GH context
-        run: |
-          echo GitHub Context "${{ github }}"
 
       - name: DogeOps Environment
         id: doge-env
