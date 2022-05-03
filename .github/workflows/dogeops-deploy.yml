@@ -1,25 +1,6 @@
 name: 'Doge go brrrr️ 🏍'
 
 on:
-  push:
-    paths:
-    - api/terraform/**
-    - front/terraform/**
-  workflow_dispatch:
-    inputs:
-      runs-on:
-        description: "Platform to execute on."
-        type: string
-        default: ubuntu-latest
-
-      environment:
-        type: string
-        description: "AWS environment (feature, develop, staging, prod)"
-
-jobs:
-  check:
-    runs-on: ${{ inputs.runs-on }}
-
   workflow_dispatch:
     inputs:
       runs-on:
