@@ -1,4 +1,4 @@
-name: 'Doge go brrrr️'
+name: 'Doge go brrrr️ 🏍'
 
 on:
   push:
@@ -45,7 +45,7 @@ jobs:
       - name: Checkout 🛎
         uses: actions/checkout@v3
 
-      - name: DEBUG: GH context
+      - name: GH context
         run: |
           echo GitHub Context "${{ github }}"
 
