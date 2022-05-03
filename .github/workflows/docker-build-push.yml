@@ -53,13 +53,11 @@ jobs:
     runs-on: ${{ inputs.runs-on }}
 
     outputs:
-      deploy-config: ${{steps.deploy-config.outputs.config}}
+      image-uri: ${{ inputs.container_registry }}/${{ steps.get-repo.outputs.repo }}:${{ steps.meta.outputs.version }}
 
     steps:
     - name: Checkout repo
       uses: actions/checkout@v3
-      with:
-        fetch-depth: 0  # fetch the whole repo history
 
     - name: Get repository accesses
       id: get-repo
@@ -172,25 +170,6 @@ jobs:
         tags: ${{ steps.meta.outputs.tags }}
 #        cache-from: type=registry,ref=${{ inputs.container_registry }}/${{ steps.get-repo.outputs.repo }}:latest
 #        cache-to: type=registry,ref=${{ inputs.container_registry }}/${{ steps.get-repo.outputs.repo }}:latest,mode=max
-
-    - name: Configure deploy variables
-      id: deploy-config
-      run: |
-        set -e
-
-        CONFIG_DIR=deploy
-        mkdir $CONFIG_DIR
-        CONFIG=$CONFIG_DIR/config.yml
-
-        echo "this is a test" > $CONFIG
-
-        echo "::set-output name=config::$CONFIG_DIR"
-
-    - name: Upload deploy config as artifact
-      uses: actions/upload-artifact@v1
-      with:
-        name: deploy-config
-        path: ${{steps.deploy-config.outputs.config}}
 
     # run this only for prod
     # every image sign needs user intervention

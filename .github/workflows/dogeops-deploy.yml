@@ -1,0 +1,107 @@
+name: 'Doge go brrrr️'
+
+on:
+  push:
+    paths:
+    - api/terraform/**
+    - front/terraform/**
+  workflow_dispatch:
+    inputs:
+      runs-on:
+        description: "Platform to execute on."
+        type: string
+        default: ubuntu-latest
+
+      environment:
+        type: string
+        description: "AWS environment (feature, develop, staging, prod)"
+
+jobs:
+  check:
+    runs-on: ${{ inputs.runs-on }}
+
+  workflow_dispatch:
+    inputs:
+      runs-on:
+        description: "Platform to execute on."
+        type: string
+        default: ubuntu-latest
+
+      aws_region:
+        description: "AWS Region to deploy to"
+        type: string
+        default: eu-west-3
+
+      deploy_unit:
+        type: string
+        description: "Path to the unit to deploy (eg. api, front, etc)"
+        default: '.'
+
+jobs:
+  check:
+    runs-on: ${{ inputs.runs-on }}
+
+    steps:
+      - name: Checkout 🛎
+        uses: actions/checkout@v3
+
+      - name: DEBUG: GH context
+        run: |
+          echo GitHub Context "${{ github }}"
+
+      - name: DogeOps Environment
+        id: doge-env
+        uses: WITH-Madrid/action-select-deploy-env@main
+        with:
+          deploy_unit: ${{ inputs.deploy_unit }}
+
+      - name: Setup Terraform
+        id: init
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.1.9
+
+      - name: Terraform Format
+        id: fmt
+        run: terraform fmt -check
+
+      - name: Terraform Plan
+        id: plan
+        if: github.event_name == 'pull_request'
+        continue-on-error: true
+        run: |
+          terraform plan -no-color -input=false \
+            -backend-config="bucket=with-dogeops-terraform-state" \
+            -backend-config="key=${{ steps.doge-env.outputs.unit }}/infra/${{ steps.doge-env.outputs.environment }}/${{ steps.doge-env.outputs.key }}/backend/terraform.tfstate" \
+            -backend-config="region=${{ inputs.aws_region }}" \
+            -backend-config="dynamodb_table=terraform-locks" \
+            -backend-config="encrypt=true"
+
+      - name: Terraform Summary
+        id: comment
+        uses: actions/github-script@v3
+        if: github.event_name == 'pull_request'
+        env:
+          PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+            #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+            #### Terraform Validation 🤖${{ steps.validate.outputs.stdout }}
+            #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+
+            <details><summary>Show Plan</summary>
+
+            \`\`\`${process.env.PLAN}\`\`\`
+
+            </details>
+
+            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ env.tf_actions_working_dir }}\`, Workflow: \`${{ github.workflow }}\`*`;
+
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
