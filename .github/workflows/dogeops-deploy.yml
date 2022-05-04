@@ -1,7 +1,7 @@
 name: 'Doge go brrrr️ 🏍'
 
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
       runs-on:
         description: "Platform to execute on."
