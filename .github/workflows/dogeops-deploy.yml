@@ -65,7 +65,7 @@ jobs:
         if: github.event_name == 'pull_request'
         continue-on-error: true
         run: |
-          terraform plan -no-color -input=false -out=tfplan.out -backend-config="${{steps.backend.outputs.hcl}}"
+          terraform -backend-config="${{steps.backend.outputs.hcl}}" plan -no-color -input=false -out=tfplan.out
 
       - name: Terraform Summary
         id: comment
