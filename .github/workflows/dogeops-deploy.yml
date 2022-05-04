@@ -28,7 +28,7 @@ jobs:
 
       - name: DogeOps Environment
         id: doge-env
-        uses: WITH-Madrid/action-select-deploy-env@main
+        uses: WITH-Test/action-select-deploy-env@main
         with:
           deploy_unit: ${{ inputs.deploy_unit }}
 
