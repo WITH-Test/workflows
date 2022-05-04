@@ -39,14 +39,14 @@ jobs:
         shell: bash
         id: backend
         run: |
-          cat > backend.hcl <<EOF-
+          cat > $TF_WORKDIR/backend.hcl <<EOF-
             bucket          = "with-dogeops-terraform-state"
             key             = "${{ steps.doge-env.outputs.unit }}/infra/${{ steps.doge-env.outputs.environment }}/${{ steps.doge-env.outputs.key }}/backend/terraform.tfstate"
             region          = "${{ inputs.aws_region }}"
             dynamodb_table  = "terraform-locks"
             encrypt         = "true"
           EOF-
-          echo "::set-output name=hcl::backend.hcl"
+          echo "::set-output name=hcl::$TF_WORKDIR/backend.hcl"
 
       - name: Setup Terraform
         id: init
