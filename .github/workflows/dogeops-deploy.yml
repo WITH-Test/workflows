@@ -36,6 +36,7 @@ jobs:
           deploy_unit: ${{ inputs.deploy_unit }}
 
       - name: Make Terraform backend.hcl
+        shell: bash
         id: backend
         run: |
           cat > backend.hcl <<EOF-
@@ -64,8 +65,7 @@ jobs:
         if: github.event_name == 'pull_request'
         continue-on-error: true
         run: |
-          terraform plan -no-color -input=false -out=tfplan.out \
-            -backend-config="${{steps.backend.outputs.hcl}}"
+          terraform plan -no-color -input=false -out=tfplan.out -backend-config="${{steps.backend.outputs.hcl}}"
 
       - name: Terraform Summary
         id: comment
