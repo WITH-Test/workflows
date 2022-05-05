@@ -18,8 +18,18 @@ on:
         description: "Path to the unit to deploy (eg. api, front, etc)"
         default: '.'
 
+      environment:
+        type: string
+        required: true
+        description: "GitHub environment to use"
+
 jobs:
-  check:
+  deploy:
+    environment: ${{ inputs.environment }}
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+
     runs-on: ${{ inputs.runs-on }}
 
     env:
@@ -42,7 +52,7 @@ jobs:
           BACKEND_CONFIG="$TF_WORKDIR/config.s3.tfbackend"
           cat > $BACKEND_CONFIG <<EOF-
           bucket          = "with-dogeops-terraform-state"
-          key             = "${{ steps.doge-env.outputs.unit }}/infra/${{ steps.doge-env.outputs.environment }}/${{ steps.doge-env.outputs.key }}/backend/terraform.tfstate"
+          key             = "${{ steps.doge-env.outputs.unit }}/infra/${{ inputs.environment }}/${{ steps.doge-env.outputs.key }}/backend/terraform.tfstate"
           region          = "${{ inputs.aws_region }}"
           dynamodb_table  = "terraform-locks"
           encrypt         = "true"
