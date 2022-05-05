@@ -35,24 +35,30 @@ jobs:
         with:
           deploy_unit: ${{ inputs.deploy_unit }}
 
-      - name: Make Terraform backend.hcl
+      - name: Make Terraform Backend config
         shell: bash
         id: backend
         run: |
-          cat > $TF_WORKDIR/backend.hcl <<EOF-
+          BACKEND_CONFIG="$TF_WORKDIR/config.s3.tfbackend"
+          cat > $BACKEND_CONFIG <<EOF-
           bucket          = "with-dogeops-terraform-state"
           key             = "${{ steps.doge-env.outputs.unit }}/infra/${{ steps.doge-env.outputs.environment }}/${{ steps.doge-env.outputs.key }}/backend/terraform.tfstate"
           region          = "${{ inputs.aws_region }}"
           dynamodb_table  = "terraform-locks"
           encrypt         = "true"
           EOF-
-          echo "::set-output name=hcl::$TF_WORKDIR/backend.hcl"
+          echo "::set-output name=hcl::$BACKEND_CONFIG"
 
       - name: Setup Terraform
         id: init
         uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: 1.1.9
+
+      - name: Terraform Init
+        id: init
+        run: |
+          terraform init -backend-config=${{ steps.backend.outputs.hcl }}
 
       - name: Terraform Format
         id: fmt
@@ -65,7 +71,7 @@ jobs:
         continue-on-error: true
         run: |
           echo "Planning terraform"
-          terraform plan -backend-config=${{steps.backend.outputs.hcl}} -no-color -input=false -out=tfplan.out
+          terraform plan -no-color -input=false -out=tfplan.out
 
       - name: Terraform Summary
         id: comment
