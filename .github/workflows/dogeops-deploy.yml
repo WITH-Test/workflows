@@ -112,6 +112,5 @@ jobs:
 
       - name: Terraform Apply
         if: ${{ false }}
-        environment: steps.doge-env.environment
         run: |
           echo "Apply Terraform Plan"
