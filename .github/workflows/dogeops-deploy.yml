@@ -47,6 +47,8 @@ jobs:
         shell: bash
         id: backend
         run: |
+          pwd
+          echo "Terraform WORKDIR: $TF_WORKDIR"
           BACKEND_CONFIG="$TF_WORKDIR/config.s3.tfbackend"
           cat > $BACKEND_CONFIG <<EOF-
           bucket          = "with-dogeops-terraform-state"
