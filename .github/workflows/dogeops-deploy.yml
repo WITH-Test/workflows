@@ -67,8 +67,13 @@ jobs:
       - name: Terraform Init
         id: init
         run: |
-          echo "::set-output name=version::$(terraform -version | head -n1)"
-          terraform init -backend-config=${{ steps.backend.outputs.hcl }}
+          terraform -version
+          terraform init \
+            -backend-config="bucket=with-dogeops-terraform-state" \
+            -backend-config="key=${{ steps.doge-env.outputs.unit }}/infra/${{ inputs.environment }}/${{ steps.doge-env.outputs.key }}/backend/terraform.tfstate" \
+            -backend-config="region=${{ inputs.aws_region }}" \
+            -backend-config="dynamodb_table=terraform-locks" \
+            -backend-config="encrypt=true"
 
       - name: Terraform Format
         id: fmt
