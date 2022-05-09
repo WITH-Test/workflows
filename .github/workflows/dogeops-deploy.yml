@@ -43,22 +43,6 @@ jobs:
         with:
           deploy_unit: ${{ inputs.deploy_unit }}
 
-      - name: Make Terraform Backend config
-        shell: bash
-        id: backend
-        run: |
-          pwd
-          echo "Terraform WORKDIR: $TF_WORKDIR"
-          BACKEND_CONFIG="$TF_WORKDIR/config.s3.tfbackend"
-          cat > $BACKEND_CONFIG <<EOF-
-          bucket          = "with-dogeops-terraform-state"
-          key             = "${{ steps.doge-env.outputs.unit }}/infra/${{ inputs.environment }}/${{ steps.doge-env.outputs.key }}/backend/terraform.tfstate"
-          region          = "${{ inputs.aws_region }}"
-          dynamodb_table  = "terraform-locks"
-          encrypt         = "true"
-          EOF-
-          echo "::set-output name=hcl::$BACKEND_CONFIG"
-
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
         with:
