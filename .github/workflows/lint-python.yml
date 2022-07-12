@@ -13,15 +13,10 @@ on:
         type: string
         required: false
         default: .
-      # original src
       PYTHON_VERSION:
         required: false
         type: string
         default: '3.10'
-      DEPENDENCY_MANAGER:
-        required: false
-        type: string
-        default: 'pip'  # or poetry, pipenv
       ENFORCE_ISORT:
         required: false
         type: boolean
@@ -34,14 +29,6 @@ on:
         required: false
         type: boolean
         default: true
-      ENFORCE_PYLINT:
-        required: false
-        type: string
-        default: false
-#      PYLINT_CONFIG:
-#        required: false
-#        type: string
-#        default: ''
 
       # (Bandit??) Will by default scan `.` if you want to configure it otherwise use `targets` stanza in config file
       # Important: Make sure to exclude `./venv` from scan paths!
@@ -68,56 +55,27 @@ jobs:
       with:
         python-version: ${{ inputs.PYTHON_VERSION }}
 
-#    - name: Get cache metadata
-#      id: cache-meta
-#      run: |
-#        CACHE_KEY=""
-#        CACHE_PATH=""
-#
-#        if [ ${{ inputs.DEPENDENCY_MANAGER }} = 'pip' ]; then
-#          CACHE_KEY="venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/requirements.txt') }}"
-#          CACHE_PATH=$(pip cache dir)
-#        elif [ ${{ inputs.DEPENDENCY_MANAGER }} = 'poetry' ]; then
-#          CACHE_KEY="venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}"
-#          CACHE_PATH="./venv"
-#        elif [ ${{ inputs.DEPENDENCY_MANAGER }} = 'pipenv' ]; then
-#          CACHE_KEY="venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/Pipfile.lock') }}"
-#          CACHE_PATH="./venv"
-#        fi
-#        echo "::set-output name=cache-key::$CACHE_KEY"
-#        echo "::set-output name=cache-path::$CACHE_PATH"
-#
-#    - name: Install Poetry
-#      uses: snok/install-poetry@v1
-#      if: inputs.DEPENDENCY_MANAGER == 'poetry'
-#      with:
-#        virtualenvs-create: false
-#        virtualenvs-in-project: true
-#        virtualenvs-path: ${{ steps.cache-meta.outputs.cache-path }}
-#
-#    - name: Load cached venv
-#      id: cache
-#      uses: actions/cache@v3
-#      with:
-#        path: ${{ steps.cache-meta.outputs.cache-path }}
-#        key: ${{ steps.cache-meta.outputs.cache-key }}
-#
-#    - name: Install Dependencies
-#      run: |
-#        python -m pip install --upgrade pip
-#        python -m venv venv
-#        source venv/bin/activate
-#        pip install pylint bandit pytest pytest-cov
-#        if [ ${{ inputs.DEPENDENCY_MANAGER }} = 'pip' ]; then
-#          pip install -r requirements.txt;
-#        elif [ ${{ inputs.DEPENDENCY_MANAGER }} = 'poetry' ]; then
-#          poetry install --no-root
-#        elif [ ${{ inputs.DEPENDENCY_MANAGER }} = 'pipenv' ]; then
-#          pip install pipenv
-#          pipenv install
-#        fi
+    - name: Get cache metadata
+      id: cache-meta
+      run: |
+        CACHE_KEY=""
+        CACHE_PATH=""
+
+        CACHE_KEY="venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}"
+        CACHE_PATH=$(pip cache dir)
+
+        echo "::set-output name=cache-key::$CACHE_KEY"
+        echo "::set-output name=cache-path::$CACHE_PATH"
+
+    - name: Load cached venv
+      id: cache
+      uses: actions/cache@v3
+      with:
+        path: ${{ steps.cache-meta.outputs.cache-path }}
+        key: ${{ steps.cache-meta.outputs.cache-key }}
 
     - name: Install action dependencies
+      if: !cache.outputs.cache-hit
       run: |
         set -x
         set -o
@@ -144,17 +102,6 @@ jobs:
       uses: psf/black@stable
       with:
         options: "--verbose ${{ inputs.ENFORCE_BLACK && '--check' || '' }}"
-
-#    - name: Lint code (pylint)
-#      # Will find config automatically in `pylintrc`, `.pylintrc`, `pyproject.toml`, NOT `setup.cfg` - https://pylint.pycqa.org/en/latest/user_guide/run.html#command-line-options
-#      run: |
-#        source venv/bin/activate
-#        PYLINT_CONDITIONAL_ARGS=()
-#        if [ -n "${{ inputs.PYLINT_CONFIG }}" ]; then
-#          PYLINT_CONDITIONAL_ARGS+=( --rcfile=${{ inputs.PYLINT_CONFIG }} )
-#        fi
-#
-#        pylint **/*.py  ${{ inputs.ENFORCE_PYLINT && '' || '--exit-zero' }} "${PYLINT_CONDITIONAL_ARGS[@]}"
 
     - name: Code security check (bandit)
       if: false
