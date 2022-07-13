@@ -74,7 +74,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Fetch deploy config
-      uses: actions/download-artifact@v1
+      uses: actions/download-artifact@v3
       with:
         name: deploy-config
         path: deploy
