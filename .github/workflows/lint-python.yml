@@ -73,6 +73,7 @@ jobs:
       with:
         path: ${{ steps.cache-meta.outputs.cache-path }}
         key: ${{ steps.cache-meta.outputs.cache-key }}
+        restore-keys: ${{ steps.cache-meta.outputs.cache-key }}
 
     - name: Install action dependencies
       if: !cache.outputs.cache-hit
@@ -80,17 +81,7 @@ jobs:
         set -x
         set -o
 
-        declare -a LINT_DEPS=()
-
-        if [ "${{ inputs.ENFORCE_ISORT }}" = 'true' ]; then
-          LINT_DEPS=( ${LINT_DEPS[@]} 'isort' )
-        elif [ "${{ inputs.ENFORCE_BLACK }}" = 'true' ]; then
-          LINT_DEPS=( ${LINT_DEPS[@]} 'black' )
-        elif [ "${{ inputs.ENFORCE_BANDIT }}" = 'true' ]; then
-          LINT_DEPS=( ${LINT_DEPS[@]} 'bandit' )
-        fi
-
-        pip install -U pip setuptools wheel "${LINT_DEPS[@]}"
+        pip install -U pip setuptools wheel isort black bandit
 
     - name: Check style (isort)
       uses: isort/isort-action@master
