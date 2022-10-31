@@ -95,7 +95,5 @@ jobs:
         options: "--verbose ${{ inputs.ENFORCE_BLACK && '--check' || '' }}"
 
     - name: Code security check (bandit)
-      if: false
-      # Will find config automatically in `.bandit`, others have to specified with --ini - see https://github.com/PyCQA/bandit/issues/396#issuecomment-475152672
       run: |
         bandit -r ${{ env.BANDIT_BASE_DIR }} ${{ env.ENFORCE_BANDIT != 'true' && '--exit-zero' || '' }} ${{ env.BANDIT_CONFIG }}
