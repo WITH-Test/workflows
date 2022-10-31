@@ -61,7 +61,7 @@ jobs:
         CACHE_KEY=""
         CACHE_PATH=""
 
-        CACHE_KEY="venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}"
+        CACHE_KEY="venv-${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
         CACHE_PATH=$(pip cache dir)
 
         echo "::set-output name=cache-key::$CACHE_KEY"
@@ -73,12 +73,11 @@ jobs:
       with:
         path: ${{ steps.cache-meta.outputs.cache-path }}
         key: ${{ steps.cache-meta.outputs.cache-key }}
-        restore-keys: ${{ steps.cache-meta.outputs.cache-key }}
+        restore-keys: ${{ runner.os }}-pip-
 
     - name: Install action dependencies
       if: steps.cache.outputs.cache-hit != 'true'
       run: |
-        echo "cache: ${{ steps.cache.outputs.cache-hit }}"
         set -x
         set -o
 
