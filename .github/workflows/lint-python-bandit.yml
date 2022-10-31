@@ -32,7 +32,7 @@ on:
       BANDIT_BASE_DIR:
         required: false
         type: string
-        default: .
+        default: '.'
       BANDIT_CONFIG:
         required: false
         type: string
@@ -76,7 +76,7 @@ jobs:
         restore-keys: ${{ steps.cache-meta.outputs.cache-key }}
 
     - name: Install action dependencies
-      if: steps.cache.outputs.cache-hit == null
+      if: !steps.cache.outputs.cache-hit
       run: |
         set -x
         set -o
