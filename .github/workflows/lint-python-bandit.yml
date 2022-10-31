@@ -78,7 +78,7 @@ jobs:
     - name: Install action dependencies
 #      if: !cache.outputs.cache-hit
       run: |
-        echo "cache: ${{ steps.cache }}"
+        echo "cache: ${{ steps.cache.outputs.cache-hit }}"
         set -x
         set -o
 
