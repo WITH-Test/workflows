@@ -1,0 +1,101 @@
+name: 'DogeOps : Python Lint'
+
+on:
+  workflow_call:
+    inputs:
+      runs-on:
+        description: 'Platform to execute on'
+        required: false
+        type: string
+        default: 'ubuntu-latest'
+      project-folder:
+        description: 'The folder containing the project to build'
+        type: string
+        required: false
+        default: .
+      PYTHON_VERSION:
+        required: false
+        type: string
+        default: '3.10'
+      ENFORCE_ISORT:
+        required: false
+        type: boolean
+        default: true
+      ENFORCE_BLACK:
+        required: false
+        type: boolean
+        default: true
+      ENFORCE_BANDIT:
+        required: false
+        type: boolean
+        default: true
+      BANDIT_BASE_DIR:
+        required: false
+        type: string
+        default: .
+      BANDIT_CONFIG:
+        required: false
+        type: string
+
+jobs:
+  lint:
+    runs-on: ${{ inputs.runs-on }}
+    defaults:
+      run:
+        working-directory: ${{ inputs.project-folder }}
+
+    permissions:
+      contents: read
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - uses: actions/setup-python@v1
+      id: setup-python
+      with:
+        python-version: ${{ inputs.PYTHON_VERSION }}
+
+    - name: Get cache metadata
+      id: cache-meta
+      run: |
+        CACHE_KEY=""
+        CACHE_PATH=""
+
+        CACHE_KEY="venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}"
+        CACHE_PATH=$(pip cache dir)
+
+        echo "::set-output name=cache-key::$CACHE_KEY"
+        echo "::set-output name=cache-path::$CACHE_PATH"
+
+    - name: Load cached venv
+      id: cache
+      uses: actions/cache@v3
+      with:
+        path: ${{ steps.cache-meta.outputs.cache-path }}
+        key: ${{ steps.cache-meta.outputs.cache-key }}
+        restore-keys: ${{ steps.cache-meta.outputs.cache-key }}
+
+    - name: Install action dependencies
+      if: !cache.outputs.cache-hit
+      run: |
+        set -x
+        set -o
+
+        pip install -U pip setuptools wheel isort black bandit
+
+    - name: Check style (isort)
+      uses: isort/isort-action@master
+      with:
+        sortPaths: ${{ inputs.project-folder }}
+        configuration: "${{ inputs.ENFORCE_ISORT && '--check-only' || '' }} --diff --profile=black"
+
+    - name: Check style (black)
+      uses: psf/black@stable
+      with:
+        options: "--verbose ${{ inputs.ENFORCE_BLACK && '--check' || '' }}"
+
+    - name: Code security check (bandit)
+      if: false
+      # Will find config automatically in `.bandit`, others have to specified with --ini - see https://github.com/PyCQA/bandit/issues/396#issuecomment-475152672
+      run: |
+        bandit -r ${{ env.BANDIT_BASE_DIR }} ${{ env.ENFORCE_BANDIT != 'true' && '--exit-zero' || '' }} ${{ env.BANDIT_CONFIG }}
