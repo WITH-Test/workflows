@@ -76,7 +76,7 @@ jobs:
         restore-keys: ${{ steps.cache-meta.outputs.cache-key }}
 
     - name: Install action dependencies
-#      if: !cache.outputs.cache-hit
+      if: steps.cache.outputs.cache-hit != 'true'
       run: |
         echo "cache: ${{ steps.cache.outputs.cache-hit }}"
         set -x
