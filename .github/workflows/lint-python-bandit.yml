@@ -61,7 +61,7 @@ jobs:
         CACHE_KEY=""
         CACHE_PATH=""
 
-        CACHE_KEY="${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}"
+        CACHE_KEY="${{ runner.os }}-pip-${{ hashFiles('**/pyproject.toml') }}"
         CACHE_PATH=$(pip cache dir)
 
         echo "::set-output name=cache-key::$CACHE_KEY"
@@ -76,7 +76,7 @@ jobs:
         restore-keys: ${{ runner.os }}-pip-
 
     - name: Install action dependencies
-#      if: steps.cache.outputs.cache-hit != 'true'
+      if: steps.cache.outputs.cache-hit != 'true'
       run: |
         set -x
         set -o
