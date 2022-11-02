@@ -61,7 +61,7 @@ jobs:
         CACHE_KEY=""
         CACHE_PATH=""
 
-        CACHE_KEY="${{ runner.os }}-pip-${{ hashFiles('**/pyproject.toml') }}"
+        CACHE_KEY="venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-isort-black-bandit"
         CACHE_PATH=$(pip cache dir)
 
         echo "::set-output name=cache-key::$CACHE_KEY"
