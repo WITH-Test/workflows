@@ -95,6 +95,5 @@ jobs:
         options: "--verbose ${{ inputs.ENFORCE_BLACK && '--check' || '' }}"
 
     - name: Code security check (bandit)
-
       run: |
         bandit -r ${{ inputs.BANDIT_BASE_DIR }} ${{ inputs.ENFORCE_BANDIT != true && '--exit-zero' || '' }} ${{ inputs.BANDIT_CONFIG }}
