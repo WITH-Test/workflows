@@ -29,13 +29,9 @@ on:
         required: false
         type: boolean
         default: true
-
-      # (Bandit??) Will by default scan `.` if you want to configure it otherwise use `targets` stanza in config file
-      # Important: Make sure to exclude `./venv` from scan paths!
       BANDIT_CONFIG:
         required: false
         type: string
-        default: ''
 
 jobs:
   lint:
@@ -61,11 +57,11 @@ jobs:
         CACHE_KEY=""
         CACHE_PATH=""
 
-        CACHE_KEY="venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}"
+        CACHE_KEY="venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-isort-black-bandit"
         CACHE_PATH=$(pip cache dir)
 
-        echo "::set-output name=cache-key::$CACHE_KEY"
-        echo "::set-output name=cache-path::$CACHE_PATH"
+        echo "cache-key=$CACHE_KEY" >> $GITHUB_OUTPUT
+        echo "cache-path=$CACHE_PATH" >> $GITHUB_OUTPUT
 
     - name: Load cached venv
       id: cache
@@ -73,10 +69,10 @@ jobs:
       with:
         path: ${{ steps.cache-meta.outputs.cache-path }}
         key: ${{ steps.cache-meta.outputs.cache-key }}
-        restore-keys: ${{ steps.cache-meta.outputs.cache-key }}
+        restore-keys: venv-${{ runner.os }}-
 
     - name: Install action dependencies
-      if: !cache.outputs.cache-hit
+      if: steps.cache.outputs.cache-hit != 'true'
       run: |
         set -x
         set -o
@@ -93,16 +89,8 @@ jobs:
       uses: psf/black@stable
       with:
         options: "--verbose ${{ inputs.ENFORCE_BLACK && '--check' || '' }}"
+        src: ${{ inputs.project-folder }}
 
     - name: Code security check (bandit)
-      if: false
-      # Will find config automatically in `.bandit`, others have to specified with --ini - see https://github.com/PyCQA/bandit/issues/396#issuecomment-475152672
       run: |
-        source venv/bin/activate
-        BANDIT_CONDITIONAL_ARGS=()
-        if [ -n "${{ inputs.BANDIT_CONFIG }}" ]; then
-          BANDIT_CONDITIONAL_ARGS+=( --exclude ./venv --ini ${{ inputs.BANDIT_CONFIG }} )
-        else
-          BANDIT_CONDITIONAL_ARGS+=( . --exclude ./venv )
-        fi
-        bandit -r ${{ inputs.ENFORCE_BANDIT && '' || '--exit-zero' }} "${BANDIT_CONDITIONAL_ARGS[@]}"
+        bandit -r ${{ inputs.project-folder }} ${{ inputs.ENFORCE_BANDIT != true && '--exit-zero' || '' }} ${{ inputs.BANDIT_CONFIG }}
